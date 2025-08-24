@@ -1,3 +1,4 @@
+import os  # <-- Import necessário
 from flask import Flask
 from config import Config
 from models import db
@@ -24,4 +25,5 @@ def create_app():
 
 if __name__ == "__main__":
   app_instance = create_app()
-  app_instance.run(host="0.0.0.0", port=5000, debug=True)
+  port = int(os.environ.get("PORT", 5000))  # pega porta do Render
+  app_instance.run(host="0.0.0.0", port=port, debug=True)
