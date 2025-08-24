@@ -16,6 +16,17 @@ def list_memories():
     } for m in memories
   ])
 
+@memory_bp.route("/<int:memory_id>", methods=["GET"])
+def get_unique_memory(memory_id):
+  memory = Memory.query.get_or_404(memory_id)
+  return jsonify({
+    "id": memory.id,
+    "title": memory.title,
+    "content": memory.content,
+    "event_date": memory.event_date.isoformat(),
+    "user_id": memory.user_id
+  })
+
 @memory_bp.route("/", methods=["POST"])
 def create_memory():
   data = request.json
