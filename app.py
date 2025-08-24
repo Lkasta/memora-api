@@ -1,5 +1,6 @@
-import os  # <-- Import necessário
+import os
 from flask import Flask
+from flask_cors import CORS  # <-- Import necessário
 from config import Config
 from models import db
 from routes.memory_routes import memory_bp
@@ -12,6 +13,8 @@ def create_app():
 
   with app.app_context():
     db.create_all()
+
+  CORS(app, supports_credentials=True) 
 
   @app.route("/")
   def home():
