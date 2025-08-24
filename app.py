@@ -17,10 +17,18 @@ def create_app():
   with app.app_context():
     db.create_all()
 
-  if os.environ.get("FLASK_ENV") == "development":
-    CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
-  else:
-    CORS(app, origins=["https://memora.lkasta.com"], supports_credentials=True)
+    if os.environ.get("FLASK_ENV") == "development":
+      CORS(app, 
+        origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+        supports_credentials=True)
+    else:
+      CORS(app, 
+        origins=["https://memora.lkasta.com"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+        supports_credentials=True)
 
   @app.route("/")
   def home():
