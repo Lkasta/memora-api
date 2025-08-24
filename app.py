@@ -13,17 +13,15 @@ def create_app():
   with app.app_context():
     db.create_all()
 
-  # Rota de teste simples
   @app.route("/")
   def home():
     return "<h1>Backend rodando!</h1>"
 
-  # Registrar blueprint
   app.register_blueprint(memory_bp, url_prefix="/memories")
 
   return app
 
 if __name__ == "__main__":
   app_instance = create_app()
-  port = int(os.environ.get("PORT", 5000))  # pega porta do Render
+  port = int(os.environ.get("PORT", 5000))
   app_instance.run(host="0.0.0.0", port=port, debug=True)
