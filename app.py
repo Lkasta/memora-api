@@ -1,9 +1,12 @@
 import os
+from dotenv import load_dotenv
 from flask import Flask
-from flask_cors import CORS  # <-- Import necessário
+from flask_cors import CORS
 from config import Config
 from models import db
 from routes.memory_routes import memory_bp
+
+load_dotenv()
 
 def create_app():
   app = Flask(__name__)
@@ -14,7 +17,10 @@ def create_app():
   with app.app_context():
     db.create_all()
 
-  CORS(app, supports_credentials=True) 
+  if os.environ.get("FLASK_ENV") == "development":
+    CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+  else:
+    CORS(app, origins=["https://memora.lkasta.com"], supports_credentials=True)
 
   @app.route("/")
   def home():
