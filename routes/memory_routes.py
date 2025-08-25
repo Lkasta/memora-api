@@ -27,6 +27,25 @@ def get_unique_memory(memory_id):
     "user_id": memory.user_id
   })
 
+@memory_bp.route("/<int:memory_id>", methods=["PUT"])
+def update_memory(memory_id):
+  memory = Memory.query.get_or_404(memory_id)
+  data = request.json
+
+  if not data:
+    return jsonify({"error": "Nenhum dado fornecido"}), 400
+
+  if "title" in data:
+    memory.title = data["title"]
+  if "content" in data:
+    memory.content = data["content"]
+  if "event_date" in data:
+    memory.event_date = data["event_date"]
+
+  db.session.commit()
+  return jsonify({"message": "Memory updated successfully!"})
+
+
 @memory_bp.route("/", methods=["POST"])
 def create_memory():
   data = request.json
