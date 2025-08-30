@@ -1,9 +1,9 @@
 import os
 from flask import Flask
 from flask_cors import CORS
+from routes.memory_routes import memory_bp
 from config import Config
 from models import db
-from routes.memory_routes import memory_bp
 
 def create_app():
   app = Flask(__name__)
@@ -17,10 +17,10 @@ def create_app():
     db.create_all()
 
   CORS(app, 
-        supports_credentials=True,
-        origins=["https://memora.lkasta.com", "http://localhost:3000"],
-        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization"])
+    supports_credentials=True,
+    origins=["https://memora.lkasta.com", "http://localhost:3000"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"])
 
   @app.route("/")
   def home():
