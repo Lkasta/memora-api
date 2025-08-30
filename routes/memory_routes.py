@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from models import db, Memory
 
@@ -43,18 +44,24 @@ def update_memory(memory_id):
     memory.event_date = data["event_date"]
 
   db.session.commit()
-  return jsonify({"message": "Memory updated successfully!"})
-
+  return jsonify({
+    "message": "Memory updated successfully!",
+    "memorie": {
+      "id": memory.id
+    }
+  })
 
 @memory_bp.route("/", methods=["POST"])
 def create_memory():
   data = request.json
+  
   new_memory = Memory(
     title=data["title"],
     content=data.get("content"),
     event_date=data["event_date"],
     user_id=data["user_id"]
   )
+
   db.session.add(new_memory)
   db.session.commit()
   return jsonify({"message": "Memory created!", "id": new_memory.id}), 201

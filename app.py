@@ -27,10 +27,6 @@ def create_app():
     return "<h1>Backend rodando!</h1>"
 
   app.register_blueprint(memory_bp, url_prefix="/memories")
-  
-  @app.route("/health")
-  def health():
-    return {"status": "ok"}, 200
 
   return app
 
