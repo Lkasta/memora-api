@@ -1,17 +1,21 @@
 import os
 from flask import Flask
 from flask_cors import CORS
+from flask_migrate import Migrate
+from routes.auth_routes import auth_bp
 from routes.memory_routes import memory_bp
 from config import Config
 from models import db
 
 def create_app():
   app = Flask(__name__)
+  migrate = Migrate()
   app.config.from_object(Config)
   
   app.url_map.strict_slashes = False
   
   db.init_app(app)
+  migrate.init_app(app, db)
 
   with app.app_context():
     db.create_all()
@@ -26,6 +30,7 @@ def create_app():
   def home():
     return "<h1>Backend rodando!</h1>"
 
+  app.register_blueprint(auth_bp, url_prefix="/auth")
   app.register_blueprint(memory_bp, url_prefix="/memories")
 
   return app
