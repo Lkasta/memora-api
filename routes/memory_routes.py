@@ -1,11 +1,14 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Memory
 
 memory_bp = Blueprint("memory", __name__)
 
 @memory_bp.route("/", methods=["GET"])
+@jwt_required()
 def list_memories():
-  memories = Memory.query.order_by(Memory.event_date.desc()).all()
+  user_id = int(get_jwt_identity())
+  memories = Memory.query.filter_by(user_id=user_id).order_by(Memory.event_date.desc()).all()
   return jsonify([
     {
       "id": m.id,
@@ -17,8 +20,12 @@ def list_memories():
   ])
 
 @memory_bp.route("/<int:memory_id>", methods=["GET"])
+@jwt_required()
 def get_unique_memory(memory_id):
-  memory = Memory.query.get_or_404(memory_id)
+  user_id = int(get_jwt_identity())
+  memory = Memory.query.filter_by(id=memory_id, user_id=user_id).first()
+  if not memory:
+    return jsonify({"error": "Memory not found"}), 404
   return jsonify({
     "id": memory.id,
     "title": memory.title,
@@ -28,10 +35,14 @@ def get_unique_memory(memory_id):
   })
 
 @memory_bp.route("/<int:memory_id>", methods=["PUT"])
+@jwt_required()
 def update_memory(memory_id):
-  memory = Memory.query.get_or_404(memory_id)
-  data = request.json
+  user_id = int(get_jwt_identity())
+  memory = Memory.query.filter_by(id=memory_id, user_id=user_id).first()
+  if not memory:
+    return jsonify({"error": "Memory not found"}), 404
 
+  data = request.json
   if not data:
     return jsonify({"error": "Nenhum dado fornecido"}), 400
 
@@ -45,20 +56,23 @@ def update_memory(memory_id):
   db.session.commit()
   return jsonify({
     "message": "Memory updated successfully!",
-    "memorie": {
-      "id": memory.id
-    }
+    "memory": {"id": memory.id}
   })
 
 @memory_bp.route("/", methods=["POST"])
+@jwt_required()
 def create_memory():
+  user_id = int(get_jwt_identity())
   data = request.json
-  
+
+  if not data or not data.get("title") or not data.get("event_date"):
+    return jsonify({"error": "Campos obrigatórios: title, event_date"}), 400
+
   new_memory = Memory(
     title=data["title"],
     content=data.get("content"),
     event_date=data["event_date"],
-    user_id=data["user_id"]
+    user_id=user_id
   )
 
   db.session.add(new_memory)

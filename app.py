@@ -1,7 +1,9 @@
 import os
+from datetime import timedelta
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
 from routes.memory_routes import memory_bp
 from config import Config
@@ -11,6 +13,12 @@ def create_app():
   app = Flask(__name__)
   migrate = Migrate()
   app.config.from_object(Config)
+
+  # JWT configs
+  app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "chave_dev_super_secreta")
+  app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
+
+  jwt = JWTManager(app)
   
   app.url_map.strict_slashes = False
   
