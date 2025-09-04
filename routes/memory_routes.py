@@ -78,3 +78,17 @@ def create_memory():
   db.session.add(new_memory)
   db.session.commit()
   return jsonify({"message": "Memory created!", "id": new_memory.id}), 201
+
+@memory_bp.route("/<int:memory_id>", methods=["DELETE"])
+@jwt_required()
+def delete_memory(memory_id):
+  user_id = int(get_jwt_identity())
+  memory = Memory.query.filter_by(id=memory_id, user_id=user_id).first()
+
+  if not memory:
+    return jsonify({"error": "Memory not found"}), 404
+
+  db.session.delete(memory)
+  db.session.commit()
+
+  return jsonify({"message": "Memory deleted successfully!", "id": memory_id})
