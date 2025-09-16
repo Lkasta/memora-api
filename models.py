@@ -33,3 +33,9 @@ class Memory(db.Model):
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+class Images(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  img = db.Column(db.Text, unique=True, nullable=False)
+  file_name = db.Column(db.String(120), nullable=False)
+  mimetype = db.Column(db.Text, nullable=False)
