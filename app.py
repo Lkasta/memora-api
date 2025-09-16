@@ -11,10 +11,9 @@ from models import db
 
 def create_app():
   app = Flask(__name__)
-  migrate = Migrate()
+  migrate = Migrate(app, db)
   app.config.from_object(Config)
 
-  # JWT configs
   app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "chave_dev_super_secreta")
   app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
 
@@ -46,6 +45,5 @@ def create_app():
 if __name__ == "__main__":
   app_instance = create_app()
   port = int(os.environ.get("PORT", 5000))
-  # Para produção, desabilite o debug
   debug_mode = os.environ.get("FLASK_ENV") == "development"
   app_instance.run(host="0.0.0.0", port=port, debug=debug_mode)
