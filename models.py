@@ -34,8 +34,10 @@ class Memory(db.Model):
 
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-class Images(db.Model):
+class Image(db.Model):
+  __tablename__ = "images"
+
   id = db.Column(db.Integer, primary_key=True)
-  img = db.Column(db.Text, unique=True, nullable=False)
-  file_name = db.Column(db.String(120), nullable=False)
+  img = db.Column(db.LargeBinary, nullable=False)
+  filename = db.Column(db.String(120), nullable=False)
   mimetype = db.Column(db.Text, nullable=False)
