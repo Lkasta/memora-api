@@ -1,6 +1,7 @@
+import base64
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Memory
+from models import db, Memory, Image
 
 memory_bp = Blueprint("memory", __name__)
 
@@ -9,29 +10,47 @@ memory_bp = Blueprint("memory", __name__)
 def list_memories():
   user_id = int(get_jwt_identity())
   memories = Memory.query.filter_by(user_id=user_id).order_by(Memory.event_date.desc()).all()
-  return jsonify([
-    {
-      "id": m.id,
-      "title": m.title,
-      "content": m.content,
-      "event_date": m.event_date.isoformat(),
-      "user_id": m.user_id
-    } for m in memories
-  ])
+
+  result = []
+  for m in memories:
+    img = Image.query.filter_by(memorie_id=m.id).first()
+    img_data = None
+    if img:
+      img_data = base64.b64encode(img.img).decode("utf-8")
+
+    result.append({
+       "id": m.id,
+        "title": m.title,
+        "content": m.content,
+        "event_date": m.event_date.isoformat(),
+        "user_id": m.user_id,
+        "image": img_data
+    })
+
+  return jsonify(result)
 
 @memory_bp.route("/<int:memory_id>", methods=["GET"])
 @jwt_required()
 def get_unique_memory(memory_id):
   user_id = int(get_jwt_identity())
   memory = Memory.query.filter_by(id=memory_id, user_id=user_id).first()
+  img = Image.query.filter_by(memorie_id=memory_id).first()
+
+  img_data = None
+
+  if img:
+    img_data = base64.b64encode(img.img).decode("utf-8")
+
   if not memory:
     return jsonify({"error": "Memory not found"}), 404
+  
   return jsonify({
     "id": memory.id,
     "title": memory.title,
     "content": memory.content,
     "event_date": memory.event_date.isoformat(),
-    "user_id": memory.user_id
+    "user_id": memory.user_id,
+    "image": img_data
   })
 
 @memory_bp.route("/<int:memory_id>", methods=["PUT"])

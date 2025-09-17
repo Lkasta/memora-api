@@ -64,3 +64,18 @@ def upload_img():
     "message": "Image updated successfully!",
     "memory": {"id": memorie_id}
   })
+
+@img_bp.route("/", methods=["DELETE"])
+def delete_img():
+  user_id = request.form.get("user_id")
+  memorie_id = request.form.get("memorie_id")
+
+  img = Image.query.filter_by(user_id=user_id, memorie_id=memorie_id).first()
+
+  if not img:
+    return "Image not found!", 404
+  
+  db.session.delete(img)
+  db.session.commit()
+
+  return jsonify({"message": "Image deleted successfully!"})
