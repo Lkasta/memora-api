@@ -33,6 +33,13 @@ class Memory(db.Model):
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
+  images = db.relationship(
+    "Image",
+    backref="memory",
+    lazy=True,
+    cascade="all, delete-orphan"
+  )
+
 class Image(db.Model):
   __tablename__ = "memories-images"
 
