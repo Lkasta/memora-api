@@ -10,6 +10,7 @@ disable=
       W0719,
       R0903,
       C0303,
+      C0301,  # Line to long
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists
