@@ -17,6 +17,13 @@ class User(db.Model):
 
   memories = db.relationship("Memory", backref="user", lazy=True)
 
+  image = db.relationship(
+    "UserImage",
+    backref="user",
+    lazy=True,
+    cascade="all, delete-orphan"
+  )
+
   def set_password(self, password: str):
     self.password = password_handler.encrypt_password(password)
 
@@ -33,7 +40,7 @@ class Memory(db.Model):
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-  images = db.relationship(
+  image = db.relationship(
     "Image",
     backref="memory",
     lazy=True,
@@ -50,3 +57,13 @@ class Image(db.Model):
 
   user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
   memorie_id = db.Column(db.Integer, db.ForeignKey("memories.id"), nullable=False, unique=True)
+
+class UserImage(db.Model):
+  __tablename__ = "user-images"
+
+  id = db.Column(db.Integer, primary_key=True)
+  img = db.Column(db.LargeBinary, nullable=False)
+  filename = db.Column(db.String(120), nullable=False)
+  mimetype = db.Column(db.Text, nullable=False)
+
+  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
