@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
 from routes.memory_routes import memory_bp
 from routes.img_routes import img_bp
+from routes.user_routes import user_bp
 from config import Config
 from models import db
 
@@ -41,6 +42,7 @@ def create_app():
   app.register_blueprint(auth_bp, url_prefix="/auth")
   app.register_blueprint(memory_bp, url_prefix="/memories")
   app.register_blueprint(img_bp, url_prefix="/images")
+  app.register_blueprint(user_bp, url_prefix="/user")
 
   return app
 
