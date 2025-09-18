@@ -66,4 +66,4 @@ class UserImage(db.Model):
   filename = db.Column(db.String(120), nullable=False)
   mimetype = db.Column(db.Text, nullable=False)
 
-  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+  user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True)
