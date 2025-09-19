@@ -16,6 +16,8 @@ def upload_user():
 
   if data["username"]:
     user.username = data["username"]
+  if data["lastname"]:
+    user.lastname = data["lastname"]
   if data["password"]:
     user.set_password(data["password"])
 
