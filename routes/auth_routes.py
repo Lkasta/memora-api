@@ -33,9 +33,15 @@ def login():
   if not data or not data.get("email") or not data.get("password"):
     return jsonify({"error": "Campos obrigatórios: email, password"}), 400
 
+  print(f"Login attempt for email: {data.get('email')}")
   user = User.query.filter_by(email=data["email"]).first()
 
-  if not user or not user.check_password(data["password"]):
+  if not user:
+    print("User not found in database")
+    return jsonify({"error": "Credenciais inválidas"}), 401
+
+  if not user.check_password(data["password"]):
+    print("Password mismatch")
     return jsonify({"error": "Credenciais inválidas"}), 401
 
   access_token = create_access_token(identity=str(user.id))
