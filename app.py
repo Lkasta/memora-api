@@ -1,3 +1,4 @@
+from flask import jsonify
 import os
 from datetime import timedelta
 from flask import Flask
@@ -19,7 +20,7 @@ def create_app():
 
   app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "chave_dev_super_secreta")
   app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
-
+  
   jwt = JWTManager(app)
   
   app.url_map.strict_slashes = False
@@ -36,9 +37,9 @@ def create_app():
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"])
 
-  @app.route("/")
-  def home():
-    return "<h1>Backend rodando!</h1>"
+  @app.route("/health")
+  def health():
+    return jsonify({"status": "ok"})
 
   app.register_blueprint(auth_bp, url_prefix="/auth")
   app.register_blueprint(memory_bp, url_prefix="/memories")
