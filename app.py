@@ -14,43 +14,43 @@ from config import Config
 from models import db
 
 def create_app():
-  app = Flask(__name__)
-  migrate = Migrate(app, db)
-  app.config.from_object(Config)
+    app = Flask(__name__)
+    migrate = Migrate(app, db)
+    app.config.from_object(Config)
 
-  app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "chave_dev_super_secreta")
-  app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
-  
-  jwt = JWTManager(app)
-  
-  app.url_map.strict_slashes = False
-  
-  db.init_app(app)
-  migrate.init_app(app, db)
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "chave_dev_super_secreta")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
 
-  with app.app_context():
-    db.create_all()
+    jwt = JWTManager(app)
 
-  CORS(app, 
-    supports_credentials=True,
-    origins=["https://memora.lkasta.com", "http://localhost:3000"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"])
+    app.url_map.strict_slashes = False
 
-  @app.route("/health")
-  def health():
-    return jsonify({"status": "ok"})
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-  app.register_blueprint(auth_bp, url_prefix="/auth")
-  app.register_blueprint(memory_bp, url_prefix="/memories")
-  app.register_blueprint(img_bp, url_prefix="/images")
-  app.register_blueprint(user_bp, url_prefix="/user")
-  app.register_blueprint(user_img_bp, url_prefix="/user-image")
+    with app.app_context():
+        db.create_all()
 
-  return app
+    CORS(app, 
+        supports_credentials=True,
+        origins=["https://memora.lkasta.com", "http://localhost:3000"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"])
+
+    @app.route("/health")
+    def health():
+        return jsonify({"status": "ok"})
+
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(memory_bp, url_prefix="/memories")
+    app.register_blueprint(img_bp, url_prefix="/images")
+    app.register_blueprint(user_bp, url_prefix="/user")
+    app.register_blueprint(user_img_bp, url_prefix="/user-image")
+
+    return app
 
 if __name__ == "__main__":
-  app_instance = create_app()
-  port = int(os.environ.get("PORT", 5000))
-  debug_mode = os.environ.get("FLASK_ENV") == "development"
-  app_instance.run(host="0.0.0.0", port=port, debug=debug_mode)
+    app_instance = create_app()
+    port = int(os.environ.get("PORT", 5000))
+    debug_mode = os.environ.get("FLASK_ENV") == "development"
+    app_instance.run(host="0.0.0.0", port=port, debug=debug_mode)

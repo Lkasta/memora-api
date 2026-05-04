@@ -6,52 +6,52 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-  data = request.json
+    data = request.json
 
-  if not data or not data.get("username") or not data.get("email") or not data.get("password"):
-    return jsonify({"error": "Campos obrigatórios: username, email, password"}), 400
+    if not data or not data.get("username") or not data.get("email") or not data.get("password"):
+        return jsonify({"error": "Campos obrigatórios: username, email, password"}), 400
 
-  if User.query.filter_by(email=data["email"]).first():
-    return jsonify({"error": "Email já existe"}), 400
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"error": "Email já existe"}), 400
 
-  new_user = User(
-    username=data["username"],
-    email=data["email"],
-  )
-  new_user.set_password(data["password"])
+    new_user = User(
+        username=data["username"],
+        email=data["email"],
+    )
+    new_user.set_password(data["password"])
 
-  db.session.add(new_user)
-  db.session.commit()
+    db.session.add(new_user)
+    db.session.commit()
 
-  return jsonify({"message": "Usuário registrado com sucesso!", "id": new_user.id}), 201
+    return jsonify({"message": "Usuário registrado com sucesso!", "id": new_user.id}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-  data = request.json
+    data = request.json
 
-  if not data or not data.get("email") or not data.get("password"):
-    return jsonify({"error": "Campos obrigatórios: email, password"}), 400
+    if not data or not data.get("email") or not data.get("password"):
+        return jsonify({"error": "Campos obrigatórios: email, password"}), 400
 
-  print(f"Login attempt for email: {data.get('email')}")
-  user = User.query.filter_by(email=data["email"]).first()
+    print(f"Login attempt for email: {data.get('email')}")
+    user = User.query.filter_by(email=data["email"]).first()
 
-  if not user:
-    print("User not found in database")
-    return jsonify({"error": "Credenciais inválidas"}), 401
+    if not user:
+        print("User not found in database")
+        return jsonify({"error": "Credenciais inválidas"}), 401
 
-  if not user.check_password(data["password"]):
-    print("Password mismatch")
-    return jsonify({"error": "Credenciais inválidas"}), 401
+    if not user.check_password(data["password"]):
+        print("Password mismatch")
+        return jsonify({"error": "Credenciais inválidas"}), 401
 
-  access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(identity=str(user.id))
 
-  return jsonify({
-    "message": "Login realizado com sucesso!",
-    "token": access_token,
-    "user": {
-      "id": user.id,
-      "username": user.username,
-      "email": user.email,
-    }
-  })
+    return jsonify({
+        "message": "Login realizado com sucesso!",
+        "token": access_token,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+        }
+    })
