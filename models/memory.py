@@ -10,10 +10,4 @@ class Memory(db.Model):
     event_date = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-
-    image = db.relationship(
-        "Image",
-        backref="memory",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    image_url = db.Column(db.String(500), nullable=True)

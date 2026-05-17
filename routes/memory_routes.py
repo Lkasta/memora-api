@@ -1,7 +1,7 @@
 import base64
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, Memory, Image
+from models import db, Memory
 
 memory_bp = Blueprint("memory", __name__)
 
@@ -13,18 +13,13 @@ def list_memories():
 
     result = []
     for m in memories:
-        img = Image.query.filter_by(memorie_id=m.id).first()
-        img_data = None
-        if img:
-            img_data = base64.b64encode(img.img).decode("utf-8")
-
         result.append({
             "id": m.id,
             "title": m.title,
             "content": m.content,
             "event_date": m.event_date.isoformat(),
             "user_id": m.user_id,
-            "image": img_data
+            "image": m.image_url  # Send the URL
         })
 
     return jsonify(result)
@@ -34,12 +29,6 @@ def list_memories():
 def get_unique_memory(memory_id):
     user_id = int(get_jwt_identity())
     memory = Memory.query.filter_by(id=memory_id, user_id=user_id).first()
-    img = Image.query.filter_by(memorie_id=memory_id).first()
-
-    img_data = None
-
-    if img:
-        img_data = base64.b64encode(img.img).decode("utf-8")
 
     if not memory:
         return jsonify({"error": "Memory not found"}), 404
@@ -50,7 +39,7 @@ def get_unique_memory(memory_id):
         "content": memory.content,
         "event_date": memory.event_date.isoformat(),
         "user_id": memory.user_id,
-        "image": img_data
+        "image": memory.image_url
     })
 
 @memory_bp.route("/<int:memory_id>", methods=["PUT"])
@@ -71,6 +60,8 @@ def update_memory(memory_id):
         memory.content = data["content"]
     if "event_date" in data:
         memory.event_date = data["event_date"]
+    if "image_url" in data:
+        memory.image_url = data["image_url"]
 
     db.session.commit()
     return jsonify({
@@ -91,7 +82,8 @@ def create_memory():
         title=data["title"],
         content=data.get("content"),
         event_date=data["event_date"],
-        user_id=user_id
+        user_id=user_id,
+        image_url=data.get("image_url")
     )
 
     db.session.add(new_memory)
@@ -111,3 +103,4 @@ def delete_memory(memory_id):
     db.session.commit()
 
     return jsonify({"message": "Memory deleted successfully!", "id": memory_id})
+

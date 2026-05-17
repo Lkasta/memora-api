@@ -15,13 +15,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     memories = db.relationship("Memory", backref="user", lazy=True)
-
-    image = db.relationship(
-        "UserImage",
-        backref="user",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    profile_image_url = db.Column(db.String(500), nullable=True)
 
     def set_password(self, password: str):
         self.password = password_handler.encrypt_password(password)
