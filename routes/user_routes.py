@@ -54,10 +54,14 @@ def get_user(user_id):
     if not user:
         return jsonify({"error": "User not found!"}), 404
 
+    img_url = user.profile_image_url
+    if img_url and img_url.startswith("data:image/") and "base64,http" in img_url:
+        img_url = img_url.split("base64,")[1]
+
     return jsonify({
         "id": user.id,
         "name": user.username,
         "lastname": user.lastname,
         "email": user.email,
-        "image": user.profile_image_url
+        "image": img_url
     }), 200

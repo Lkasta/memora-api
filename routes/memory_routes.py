@@ -13,13 +13,17 @@ def list_memories():
 
     result = []
     for m in memories:
+        img_url = m.image_url
+        if img_url and img_url.startswith("data:image/") and "base64,http" in img_url:
+            img_url = img_url.split("base64,")[1]
+
         result.append({
             "id": m.id,
             "title": m.title,
             "content": m.content,
             "event_date": m.event_date.isoformat(),
             "user_id": m.user_id,
-            "image": m.image_url  # Send the URL
+            "image": img_url  # Send the URL
         })
 
     return jsonify(result)
@@ -33,13 +37,17 @@ def get_unique_memory(memory_id):
     if not memory:
         return jsonify({"error": "Memory not found"}), 404
 
+    img_url = memory.image_url
+    if img_url and img_url.startswith("data:image/") and "base64,http" in img_url:
+        img_url = img_url.split("base64,")[1]
+
     return jsonify({
         "id": memory.id,
         "title": memory.title,
         "content": memory.content,
         "event_date": memory.event_date.isoformat(),
         "user_id": memory.user_id,
-        "image": memory.image_url
+        "image": img_url
     })
 
 @memory_bp.route("/<int:memory_id>", methods=["PUT"])
