@@ -1,7 +1,6 @@
 from .base import db
 from .user import User
 from .memory import Memory
-from .image import Image
-from .user_image import UserImage
+from .memory_image import MemoryImage
 
-__all__ = ["db", "User", "Memory", "Image", "UserImage"]
+__all__ = ["db", "User", "Memory", "MemoryImage"]

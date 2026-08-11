@@ -1,11 +1,16 @@
 import bcrypt
 
+
 class PasswordHandler:
-    def encrypt_password(self, password: str) -> str:
+    """Stateless bcrypt helpers. Grouped in a class for a stable import path
+    (``from security.password_handler import PasswordHandler``) even though no
+    instance state is needed."""
+
+    @staticmethod
+    def encrypt_password(password: str) -> bytes:
         salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
+        return bcrypt.hashpw(password.encode("utf-8"), salt)
 
-        return hashed_password
-
-    def check_password(self, password: str, hashed_password: str) -> bool:
+    @staticmethod
+    def check_password(password: str, hashed_password: bytes) -> bool:
         return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
